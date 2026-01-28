@@ -75,6 +75,6 @@ RUN sdkmanager --version &&\
     flutter doctor
 
 
-# 使用清华镜像源加速 Flutter 依赖下载
+# 使用中国镜像源加速 Flutter 依赖下载
 ENV PUB_HOSTED_URL=https://pub.flutter-io.cn
 ENV FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn

@@ -16,7 +16,6 @@ jobs:
       matrix:
         image_tag:
           [
-            latest,
             "3.38.8",
           ]
 
@@ -57,5 +56,6 @@ jobs:
           context: .
           build-args: VERSION=${{ matrix.image_tag }}
           tags: |
+            ${{ secrets.DOCKER_HUB_USER }}/${{ steps.env.outputs.IMAGE_NAME }}:latest
             ${{ secrets.DOCKER_HUB_USER }}/${{ steps.env.outputs.IMAGE_NAME }}:${{ matrix.image_tag }}
             ${{ secrets.DOCKER_HUB_USER }}/${{ steps.env.outputs.IMAGE_NAME }}:${{ matrix.image_tag }}-${{ steps.env.outputs.TIME }}
