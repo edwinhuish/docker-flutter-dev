@@ -51,7 +51,7 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 # Get latest Flutter
 ENV FLUTTER_HOME=/usr/bin/flutter
 RUN mkdir -p $FLUTTER_HOME &&\
-    git clone --depth 1 --branch ${VERSION} git@github.com:flutter/flutter.git $FLUTTER_HOME && \
+    git clone --depth 1 --branch ${VERSION} https://github.com/flutter/flutter $FLUTTER_HOME && \
     rm -rf $FLUTTER_HOME/.git
 
 ENV PATH="${FLUTTER_HOME}/bin:${PATH}"
