@@ -30,8 +30,9 @@ RUN if [ -f /etc/apt/sources.list.d/debian.sources ]; then \
     fi
 
 # Install linux dependencies
-RUN apt-get update &&\
-    apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev &&\
+RUN DEBIAN_FRONTEND=noninteractive apt-get update &&\
+    apt-get install -y --no-install-recommends \
+    clang cmake ninja-build pkg-config libgtk-3-dev &&\
     apt dist-upgrade -y
 
 # Get Android SDK from stage 1
