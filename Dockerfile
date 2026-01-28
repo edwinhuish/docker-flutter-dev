@@ -46,7 +46,7 @@ RUN chmod +x $FLUTTER_HOME/bin/flutter &&\
     flutter precache
 
 # Enable flutter bash completion
-RUN $FLUTTER_HOME/bin/flutter bash-completion > /etc/profile.d/flutter_bash_completion.sh
+RUN flutter bash-completion > /etc/profile.d/flutter_bash_completion.sh
 RUN echo 'export PATH="\$PATH:\$HOME/.pub-cache/bin"' >> /etc/profile.d/path_pub_cache.sh
 
 # Install flutter bash completion
@@ -59,8 +59,3 @@ USER ${USER}
 RUN sdkmanager --version &&\
     java --version &&\
     flutter doctor
-
-
-# 使用中国镜像源加速 Flutter 依赖下载
-ENV PUB_HOSTED_URL=https://pub.flutter-io.cn
-ENV FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
