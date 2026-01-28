@@ -38,7 +38,7 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 # Get latest Flutter
 ENV FLUTTER_HOME=/usr/bin/flutter
 RUN mkdir -p $FLUTTER_HOME &&\
-    git clone --depth 1 --branch ${VERSION} git@github.com:flutter/flutter.git $FLUTTER_HOME
+    git clone --depth 1 --branch ${VERSION} https://github.com/flutter/flutter $FLUTTER_HOME
 
 ENV PATH="${FLUTTER_HOME}/bin:${PATH}"
 RUN chmod +x $FLUTTER_HOME/bin/flutter &&\
@@ -48,19 +48,6 @@ RUN chmod +x $FLUTTER_HOME/bin/flutter &&\
 # Enable flutter bash completion
 RUN $FLUTTER_HOME/bin/flutter bash-completion > /etc/profile.d/flutter_bash_completion.sh
 RUN echo 'export PATH="\$PATH:\$HOME/.pub-cache/bin"' >> /etc/profile.d/path_pub_cache.sh
-
-# 替换 sources
-# debian
-RUN if [ -f /etc/apt/sources.list ]; then \
-        sed -i 's|http://deb.debian.org|https://mirrors.ustc.edu.cn|g' /etc/apt/sources.list \
-        && sed -i 's|https://security.debian.org|https://mirrors.ustc.edu.cn|g' /etc/apt/sources.list; \
-    fi
-
-# debian 13
-RUN if [ -f /etc/apt/sources.list.d/debian.sources ]; then \
-        sed -i 's|http://deb.debian.org|https://mirrors.ustc.edu.cn|g' /etc/apt/sources.list.d/debian.sources \
-        && sed -i 's|https://security.debian.org|https://mirrors.ustc.edu.cn|g' /etc/apt/sources.list.d/debian.sources; \
-    fi
 
 # Install flutter bash completion
 RUN chown 1000:1000 $FLUTTER_HOME -R &&\
