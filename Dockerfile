@@ -13,7 +13,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     xz-utils \
     zip \
     wget \
-    libgl1-mesa-glx \
+    libgl1 \
     lib32z1 \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
