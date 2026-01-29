@@ -61,7 +61,7 @@ RUN yes | sdkmanager --licenses && \
 # Install Flutter with minimal footprint (for Android development only)
 RUN git clone --depth 1 --branch ${VERSION} https://github.com/flutter/flutter.git ${FLUTTER_HOME} && \
     cd ${FLUTTER_HOME} && git gc --prune=now && \
-    flutter precache --android --no-web --no-linux --no-windows --no-macos --no-ios --no-fuchsia && \
+    flutter precache && \
     find ${FLUTTER_HOME}/bin/cache -type f \( -name "*.zip" -o -name "*.tar.xz" -o -name "*.tar.gz" \) -delete && \
     rm -rf ${FLUTTER_HOME}/bin/cache/downloads
 
