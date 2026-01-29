@@ -71,4 +71,5 @@ RUN chown -R 1000:1000 ${FLUTTER_HOME} ${ANDROID_HOME}
 USER ${USER}
 
 # Clean up and verify installation
-RUN flutter doctor
+RUN yes | flutter doctor --android-licenses \
+    && flutter doctor
