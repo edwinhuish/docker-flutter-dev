@@ -15,6 +15,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     wget \
     libgl1 \
     lib32z1 \
+    clang \
+    cmake \
+    ninja-build \
+    pkg-config \
+    libgtk-3-dev \
+    mesa-utils \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
@@ -34,6 +40,8 @@ ENV ANDROID_HOME=/opt/android-sdk
 ENV ANDROID_SDK_ROOT=$ANDROID_HOME
 ENV FLUTTER_HOME=/opt/flutter
 ENV PATH="${FLUTTER_HOME}/bin:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${JAVA_HOME}/bin:${PATH}"
+# Fix Flutter channel warnings
+ENV FLUTTER_GIT_URL=https://github.com/flutter/flutter.git
 
 # Install Android SDK command line tools only
 RUN mkdir -p ${ANDROID_HOME}/cmdline-tools && \
@@ -45,8 +53,8 @@ RUN mkdir -p ${ANDROID_HOME}/cmdline-tools && \
 
 # Accept licenses and install only essential SDK components
 RUN yes | sdkmanager --licenses && \
-    sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" && \
-    rm -rf ${ANDROID_HOME}/.download ${ANDROID_HOME}/.temp ${ANDROID_HOME}/licenses
+    sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" && \
+    rm -rf ${ANDROID_HOME}/.download ${ANDROID_HOME}/.temp
 
 # Install Flutter with minimal footprint
 RUN git clone --depth 1 --branch ${VERSION} https://github.com/flutter/flutter.git ${FLUTTER_HOME} && \
@@ -59,5 +67,6 @@ RUN chown -R 1000:1000 ${FLUTTER_HOME} ${ANDROID_HOME}
 
 USER ${USER}
 
-# Verify installation
-RUN flutter doctor
+# Accept Android licenses and verify installation
+RUN flutter doctor --android-licenses && \
+    flutter doctor
