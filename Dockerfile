@@ -52,8 +52,7 @@ RUN yes | sdkmanager --licenses && \
 RUN git clone --depth 1 --branch ${VERSION} https://github.com/flutter/flutter.git ${FLUTTER_HOME} && \
     flutter precache --universal --android --no-web --no-linux --no-windows --no-macos --no-ios --no-fuchsia && \
     find ${FLUTTER_HOME}/bin/cache -type f -name "*.zip" -delete && \
-    find ${FLUTTER_HOME}/bin/cache -type f -name "*.tar.xz" -delete && \
-    rm -rf ${FLUTTER_HOME}/.git
+    find ${FLUTTER_HOME}/bin/cache -type f -name "*.tar.xz" -delete
 
 # Set permissions
 RUN chown -R 1000:1000 ${FLUTTER_HOME} ${ANDROID_HOME}
