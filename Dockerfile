@@ -24,18 +24,18 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# Install Eclipse Temurin JDK 25 (more reliable than Debian package)
+# Install Eclipse Temurin JDK 21 (more reliable than Debian package)
 RUN mkdir -p /usr/share/man/man1 && \
     install -m 0755 -d /etc/apt/keyrings && \
     curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public -o /etc/apt/keyrings/adoptium.asc && \
     echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list && \
     apt-get update && \
-    apt-get install -y --no-install-recommends temurin-25-jdk && \
+    apt-get install -y --no-install-recommends temurin-21-jdk && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean
 
 # Set up environment variables
-ENV JAVA_HOME=/usr/lib/jvm/temurin-25-jdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-amd64
 ENV ANDROID_HOME=/opt/android-sdk
 ENV ANDROID_SDK_ROOT=$ANDROID_HOME
 ENV FLUTTER_HOME=/opt/flutter
