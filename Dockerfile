@@ -12,14 +12,23 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     unzip \
     xz-utils \
     zip \
-    openjdk-17-jdk-headless \
+    wget \
     libgl1-mesa-glx \
     lib32z1 \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
+# Install Eclipse Temurin JDK 25 (more reliable than Debian package)
+RUN mkdir -p /usr/share/man/man1 && \
+    wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | apt-key add - && \
+    echo "deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends temurin-25-jdk && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean
+
 # Set up environment variables
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/temurin-25-jdk-amd64
 ENV ANDROID_HOME=/opt/android-sdk
 ENV ANDROID_SDK_ROOT=$ANDROID_HOME
 ENV FLUTTER_HOME=/opt/flutter
