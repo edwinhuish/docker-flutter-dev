@@ -51,22 +51,26 @@ RUN mkdir -p ${ANDROID_HOME}/cmdline-tools && \
     rm cmdline-tools.zip && \
     mv cmdline-tools latest
 
-# Accept licenses and install only essential SDK components
+# Accept licenses and install only essential SDK components (minimal set)
 RUN yes | sdkmanager --licenses && \
-    sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" && \
-    rm -rf ${ANDROID_HOME}/.download ${ANDROID_HOME}/.temp
+    sdkmanager --install "platform-tools" "platforms;android-36" "build-tools;36.0.0" && \
+    rm -rf ${ANDROID_HOME}/.download ${ANDROID_HOME}/.temp ${ANDROID_HOME}/licenses && \
+    find ${ANDROID_HOME} -name "*.exe" -delete && \
+    find ${ANDROID_HOME} -name "*.dll" -delete
 
-# Install Flutter with minimal footprint
+# Install Flutter with minimal footprint (for Android development only)
 RUN git clone --depth 1 --branch ${VERSION} https://github.com/flutter/flutter.git ${FLUTTER_HOME} && \
-    flutter precache --universal --android --no-web --no-linux --no-windows --no-macos --no-ios --no-fuchsia && \
-    find ${FLUTTER_HOME}/bin/cache -type f -name "*.zip" -delete && \
-    find ${FLUTTER_HOME}/bin/cache -type f -name "*.tar.xz" -delete
+    cd ${FLUTTER_HOME} && git gc --prune=now && \
+    flutter precache --android --no-web --no-linux --no-windows --no-macos --no-ios --no-fuchsia && \
+    find ${FLUTTER_HOME}/bin/cache -type f \( -name "*.zip" -o -name "*.tar.xz" -o -name "*.tar.gz" \) -delete && \
+    rm -rf ${FLUTTER_HOME}/bin/cache/downloads
 
 # Set permissions
 RUN chown -R 1000:1000 ${FLUTTER_HOME} ${ANDROID_HOME}
 
 USER ${USER}
 
-# Accept Android licenses and verify installation
-RUN flutter doctor --android-licenses && \
+# Clean up and verify installation
+RUN rm -rf /tmp/* /var/tmp/* && \
+    flutter doctor --android-licenses && \
     flutter doctor
