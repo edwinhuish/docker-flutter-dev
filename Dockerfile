@@ -3,6 +3,17 @@ FROM mcr.microsoft.com/devcontainers/base:debian
 ARG VERSION=3.38.8
 ARG USER=vscode
 
+VOLUME [ "/opt" ]
+
+# Set up environment variables
+ENV JAVA_HOME=/opt/jdk
+ENV ANDROID_HOME=/opt/android-sdk
+ENV ANDROID_SDK_ROOT=$ANDROID_HOME
+ENV FLUTTER_HOME=/opt/flutter
+ENV PATH="${FLUTTER_HOME}/bin:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${JAVA_HOME}/bin:${PATH}"
+# Fix Flutter channel warnings
+ENV FLUTTER_GIT_URL=https://github.com/flutter/flutter.git
+
 # Install minimal required dependencies only
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -24,24 +35,20 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# Install Eclipse Temurin JDK 21 (more reliable than Debian package)
-RUN mkdir -p /usr/share/man/man1 && \
-    install -m 0755 -d /etc/apt/keyrings && \
-    curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public -o /etc/apt/keyrings/adoptium.asc && \
-    echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends temurin-21-jdk && \
-    rm -rf /var/lib/apt/lists/* && \
-    apt-get clean
+# Download and install JDK 21 manually to /opt/jdk
+RUN JDK_VERSION="21.0.2" && \
+    JDK_BUILD="13" && \
+    JDK_ARCHIVE="OpenJDK21U-jdk_x64_linux_hotspot_${JDK_VERSION}_${JDK_BUILD}.tar.gz" && \
+    JDK_URL="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${JDK_VERSION}%2B${JDK_BUILD}/${JDK_ARCHIVE}" && \
+    echo "Downloading JDK from: ${JDK_URL}" && \
+    mkdir -p /opt/jdk && \
+    cd /tmp && \
+    curl -L -o ${JDK_ARCHIVE} ${JDK_URL} && \
+    tar -xzf ${JDK_ARCHIVE} -C /opt/jdk --strip-components=1 && \
+    rm -f ${JDK_ARCHIVE} && \
+    # Verify installation
+    /opt/jdk/bin/java -version
 
-# Set up environment variables
-ENV JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-amd64
-ENV ANDROID_HOME=/opt/android-sdk
-ENV ANDROID_SDK_ROOT=$ANDROID_HOME
-ENV FLUTTER_HOME=/opt/flutter
-ENV PATH="${FLUTTER_HOME}/bin:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${JAVA_HOME}/bin:${PATH}"
-# Fix Flutter channel warnings
-ENV FLUTTER_GIT_URL=https://github.com/flutter/flutter.git
 
 # Install Android SDK command line tools only
 RUN mkdir -p ${ANDROID_HOME}/cmdline-tools && \
